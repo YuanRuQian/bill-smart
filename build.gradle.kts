@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid) apply false
     alias(libs.plugins.spotless).apply(false)
     id("org.jmailen.kotlinter") version "4.3.0" apply false
+    id("com.google.gms.google-services") version "4.4.1" apply false
 }
 
 

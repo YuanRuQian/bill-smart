@@ -2,6 +2,7 @@ plugins {
   alias(libs.plugins.androidApplication)
   alias(libs.plugins.jetbrainsKotlinAndroid)
   id("org.jmailen.kotlinter")
+  id("com.google.gms.google-services")
 }
 
 android {
@@ -40,6 +41,9 @@ android {
 }
 
 dependencies {
+  implementation(platform(libs.firebase.bom))
+  implementation(libs.firebase.analytics)
+  implementation(libs.firebase.auth)
   implementation(libs.androidx.navigation.fragment.ktx)
   implementation(libs.androidx.navigation.ui.ktx)
   implementation(libs.androidx.core.ktx)

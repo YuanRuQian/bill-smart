@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="androidtechingdemo.billsmart" />
+                  <option name="mobileSdkAppId" value="1:817334206847:android:4dfe514e230c0b91361a4a" />
+                  <option name="projectId" value="bill-smart-ada54" />
+                  <option name="projectNumber" value="817334206847" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
