@@ -1,39 +1,85 @@
 package androidtechingdemo.billsmart.ui
 
 import android.os.Bundle
+import android.view.View
 import androidtechingdemo.billsmart.R
+import androidtechingdemo.billsmart.ui.account.AccountFragment
+import androidtechingdemo.billsmart.ui.activity.ActivityFragment
 import androidtechingdemo.billsmart.ui.auth.LoginFragment
 import androidtechingdemo.billsmart.ui.auth.RegisterFragment
-import androidtechingdemo.billsmart.ui.home.HomeFragment
-import androidx.activity.enableEdgeToEdge
+import androidtechingdemo.billsmart.ui.expense.ExpenseFragment
+import androidtechingdemo.billsmart.ui.friends.FriendsFragment
+import androidtechingdemo.billsmart.ui.groups.GroupsFragment
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
   private lateinit var auth: FirebaseAuth
   private lateinit var authStateListener: FirebaseAuth.AuthStateListener
+  private lateinit var bottomNavigationView: BottomNavigationView
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    enableEdgeToEdge()
     setContentView(R.layout.activity_main)
 
     auth = FirebaseAuth.getInstance()
 
+    bottomNavigationView = findViewById(R.id.bottomNavigationView)
+
+    bottomNavigationView.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
+
+    bottomNavigationView.setOnItemSelectedListener { menuItem ->
+      when (menuItem.itemId) {
+        R.id.friendsTab -> {
+          setCurrentFragment(ScreenSetting.FRIENDS)
+          true
+        }
+
+        R.id.groupsTab -> {
+          setCurrentFragment(ScreenSetting.GROUPS)
+          true
+        }
+
+        R.id.expenseTab -> {
+          setCurrentFragment(ScreenSetting.EXPENSE)
+          true
+        }
+
+        R.id.activityTab -> {
+          setCurrentFragment(ScreenSetting.ACTIVITY)
+          true
+        }
+
+        R.id.accountTab -> {
+          setCurrentFragment(ScreenSetting.ACCOUNT)
+          true
+        }
+
+        else -> {
+          false
+        }
+      }
+    }
+
     authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
       val user = firebaseAuth.currentUser
       if (user != null) {
-        // User is signed in, navigate to HomeFragment
-        navigateToHomeFragment()
+        // User is signed in, clear all back stack
+        setCurrentFragment(ScreenSetting.FRIENDS)
+        bottomNavigationView.visibility = View.VISIBLE
+        bottomNavigationView.menu.findItem(R.id.friendsTab).isChecked = true
       } else {
-        // User is signed out, navigate to LoginFragment
-        navigateToLoginFragment()
+        // User is signed out, clear all back stack
+        setCurrentFragment(ScreenSetting.LOGIN)
+        bottomNavigationView.visibility = View.GONE
       }
     }
 
@@ -59,33 +105,42 @@ class MainActivity : AppCompatActivity() {
         label = ScreenSetting.REGISTER.label
       }
 
-      fragment<HomeFragment>(ScreenSetting.HOME.label) {
-        label = ScreenSetting.HOME.label
+      fragment<FriendsFragment>(ScreenSetting.FRIENDS.label) {
+        label = ScreenSetting.FRIENDS.label
+      }
+
+      fragment<GroupsFragment>(ScreenSetting.GROUPS.label) {
+        label = ScreenSetting.GROUPS.label
+      }
+
+      fragment<ExpenseFragment>(ScreenSetting.EXPENSE.label) {
+        label = ScreenSetting.EXPENSE.label
+      }
+
+      fragment<ActivityFragment>(ScreenSetting.ACTIVITY.label) {
+        label = ScreenSetting.ACTIVITY.label
+      }
+
+      fragment<AccountFragment>(ScreenSetting.ACCOUNT.label) {
+        label = ScreenSetting.ACCOUNT.label
       }
     }
   }
 
   override fun onStart() {
     super.onStart()
-    // Add AuthStateListener when the activity starts
     auth.addAuthStateListener(authStateListener)
   }
 
   override fun onStop() {
     super.onStop()
-    // Remove AuthStateListener when the activity stops
     auth.removeAuthStateListener(authStateListener)
   }
 
-  private fun navigateToLoginFragment() {
-    val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+  private fun setCurrentFragment(fragment: ScreenSetting) {
+    val navHostFragment =
+      supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
     val navController = navHostFragment.navController
-    navController.navigate(ScreenSetting.LOGIN.label) // Assuming the ID of your LoginFragment is loginFragment
-  }
-
-  private fun navigateToHomeFragment() {
-    val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-    val navController = navHostFragment.navController
-    navController.navigate(ScreenSetting.HOME.label) // Assuming the ID of your HomeFragment is homeFragment
+    navController.navigate(fragment.label)
   }
 }

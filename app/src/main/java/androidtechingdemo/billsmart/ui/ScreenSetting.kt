@@ -5,5 +5,13 @@ sealed class ScreenSetting(val label: String) {
 
   object REGISTER : ScreenSetting("Register")
 
-  object HOME : ScreenSetting("Home")
+  object FRIENDS : ScreenSetting("Friends")
+
+  object GROUPS : ScreenSetting("Groups")
+
+  object EXPENSE : ScreenSetting("Expense")
+
+  object ACTIVITY : ScreenSetting("Activity")
+
+  object ACCOUNT : ScreenSetting("Account")
 }
