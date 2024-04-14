@@ -1,7 +1,9 @@
 
     #!/bin/bash
+    cd AndroidClient
     echo "Running spotless check"
     ./gradlew spotlessApply
     ./gradlew formatKotlin
     git add `git diff --name-only --cached`
+    cd ..
     exit 0
