@@ -42,7 +42,7 @@ class AccountFragment : Fragment() {
     auth.signOut()
     Toast.makeText(
       requireContext(),
-      "Goodbye, $displayName!",
+      "Goodbye!",
       Toast.LENGTH_LONG,
     ).show()
   }

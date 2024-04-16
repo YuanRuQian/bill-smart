@@ -77,8 +77,7 @@ class LoginFragment : Fragment() {
     auth.signInWithEmailAndPassword(email, password)
       .addOnCompleteListener(requireActivity()) { task ->
         if (task.isSuccessful) {
-          val user = auth.currentUser
-          Toast.makeText(context, "Welcome, ${user?.displayName}", Toast.LENGTH_LONG).show()
+          Toast.makeText(context, "Welcome back!", Toast.LENGTH_LONG).show()
         } else {
           Toast.makeText(
             context,

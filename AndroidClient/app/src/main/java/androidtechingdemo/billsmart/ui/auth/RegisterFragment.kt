@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidtechingdemo.billsmart.databinding.FragmentRegisterBinding
+import androidtechingdemo.billsmart.ui.MainActivity
 import androidtechingdemo.billsmart.ui.ScreenSetting
 import androidtechingdemo.billsmart.utils.isValidEmail
 import androidtechingdemo.billsmart.utils.isValidPassword
@@ -14,7 +15,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.userProfileChangeRequest
 
 class RegisterFragment : Fragment() {
   private lateinit var auth: FirebaseAuth
@@ -96,16 +96,19 @@ class RegisterFragment : Fragment() {
         if (task.isSuccessful) {
           val user = auth.currentUser
 
-          val profileUpdates = userProfileChangeRequest {
-            displayName = username
-          }
-
-          user!!.updateProfile(profileUpdates)
-            .addOnCompleteListener { task2 ->
-              if (task2.isSuccessful) {
-                Toast.makeText(context, "Welcome, ${user.displayName}", Toast.LENGTH_LONG).show()
-              }
+          (requireActivity() as MainActivity).addNewUserInfo(
+            username, email, user!!.uid,
+          ).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+              Toast.makeText(context, task.result, Toast.LENGTH_LONG).show()
+            } else {
+              Toast.makeText(
+                context,
+                task.exception?.message,
+                Toast.LENGTH_LONG,
+              ).show()
             }
+          }
         } else {
           Toast.makeText(
             context,

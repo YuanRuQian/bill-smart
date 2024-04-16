@@ -16,21 +16,88 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.firestoreSettings
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.functions.ktx.functions
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 
   private lateinit var auth: FirebaseAuth
   private lateinit var authStateListener: FirebaseAuth.AuthStateListener
   private lateinit var bottomNavigationView: BottomNavigationView
+  private lateinit var functions: FirebaseFunctions
+  private lateinit var firestore: FirebaseFirestore
+
+  private fun emulatorSettings() {
+    // [START functions_emulator_connect]
+    // 10.0.2.2 is the special IP address to connect to the 'localhost' of
+    // the host computer from an Android emulator.
+    functions = Firebase.functions
+    functions.useEmulator("10.0.2.2", 5001)
+    // [END functions_emulator_connect]
+
+    // 10.0.2.2 is the special IP address to connect to the 'localhost' of
+// the host computer from an Android emulator.
+    firestore = Firebase.firestore
+    firestore.useEmulator("10.0.2.2", 8080)
+
+    firestore.firestoreSettings = firestoreSettings {
+      isPersistenceEnabled = false
+    }
+
+    auth = Firebase.auth
+    auth.useEmulator("10.0.2.2", 9099)
+  }
+
+  fun addMessage(text: String): Task<String> {
+    // Create the arguments to the callable function.
+    val data = hashMapOf(
+      "text" to text,
+      "push" to true,
+    )
+
+    return functions
+      .getHttpsCallable("addMessage")
+      .call(data)
+      .continueWith { task ->
+        // This continuation runs on either success or failure, but if the task
+        // has failed then result will throw an Exception which will be
+        // propagated down.
+        val result = task.result?.data as String
+        result
+      }
+  }
+
+  fun addNewUserInfo(displayName: String, email: String, uid: String): Task<String> {
+    val data = hashMapOf(
+      "displayName" to displayName,
+      "email" to email,
+      "uid" to uid,
+    )
+    return functions
+      .getHttpsCallable("addNewUserInfo")
+      .call(data)
+      .continueWith { task ->
+        val result = task.result?.data as String
+        result
+      }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    auth = FirebaseAuth.getInstance()
+    // auth = FirebaseAuth.getInstance()
+
+    emulatorSettings()
 
     bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
