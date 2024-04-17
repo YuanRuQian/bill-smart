@@ -1,5 +1,5 @@
 
 export enum CollectionNames {
-    USERS = 'users',
-    MESSAGES = "MESSAGES",
+    USERS = "users",
+    FRIENDS = "friends",
     }

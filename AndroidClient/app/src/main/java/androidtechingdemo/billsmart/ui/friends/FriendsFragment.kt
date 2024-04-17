@@ -6,11 +6,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidtechingdemo.billsmart.databinding.FragmentFriendsBinding
-import androidtechingdemo.billsmart.ui.MainActivity
+import androidtechingdemo.billsmart.ui.CollectionNames
+import androidtechingdemo.billsmart.ui.ScreenSetting
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 
 class FriendsFragment : Fragment() {
   private lateinit var binding: FragmentFriendsBinding
+  private lateinit var firestore: FirebaseFirestore
+  private lateinit var friendsListAdapter: FriendsListAdapter
+  private lateinit var layoutManager: LinearLayoutManager
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -18,6 +28,14 @@ class FriendsFragment : Fragment() {
   ): View {
     // Inflate the layout for this fragment
     binding = FragmentFriendsBinding.inflate(inflater, container, false)
+    firestore = Firebase.firestore
+    friendsListAdapter = FriendsListAdapter(mutableListOf())
+    layoutManager = LinearLayoutManager(context)
+    with(binding) {
+      friendsRecyclerView.layoutManager = layoutManager
+      friendsRecyclerView.adapter = friendsListAdapter
+    }
+    listenToUserFriendsInfo()
     return binding.root
   }
 
@@ -25,16 +43,28 @@ class FriendsFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
 
     with(binding) {
-      getHelloMessageButton.setOnClickListener {
-        (requireActivity() as MainActivity).addMessage("Test local function call at ${System.currentTimeMillis()}")
-          .addOnSuccessListener { result ->
-            Log.d("FriendsFragment", "Hello world message: $result")
-            friendsTitle.text = result
-          }
-          .addOnFailureListener { exception ->
-            Log.d("FriendsFragment", "Error getting hello world message", exception)
-            friendsTitle.error = exception.message
-          }
+      addFriendButton.setOnClickListener {
+        val navController = findNavController()
+        navController.navigate(ScreenSetting.ADDNEWCONTACT.label)
+      }
+    }
+  }
+
+  private fun listenToUserFriendsInfo() {
+    val uid = Firebase.auth.currentUser?.uid
+    val docRef = firestore.collection(CollectionNames.USERS.name).document(uid!!).collection(CollectionNames.FRIENDS.name)
+    docRef.addSnapshotListener { snapshot, e ->
+      if (e != null) {
+        Log.w("FriendsFragment", "Listen failed.", e)
+        return@addSnapshotListener
+      }
+
+      if (snapshot != null && !snapshot.isEmpty) {
+        Log.d("FriendsFragment", "Current data: ${snapshot.documents}")
+        val newFriendsUidList = snapshot.documents.map { it.id }
+        friendsListAdapter.updateData(newFriendsUidList)
+      } else {
+        Log.d("FriendsFragment", "Current data: null")
       }
     }
   }

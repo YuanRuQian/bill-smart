@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+  implementation(libs.picasso)
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.analytics)
   implementation(libs.firebase.auth)

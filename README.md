@@ -19,6 +19,12 @@ Setup `.firebaserc` file with the following content:
 }
 ```
 
+## Locally Run Firebase Emulators
+
+```shell
+cd functions && npm run serve
+```
+
 ## Code Style References
 
 - [tivi's configuration](https://github.com/chrisbanes/tivi/tree/main?tab=readme-ov-file#code-style)

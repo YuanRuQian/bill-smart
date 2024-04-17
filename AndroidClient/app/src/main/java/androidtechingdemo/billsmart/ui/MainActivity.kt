@@ -8,6 +8,7 @@ import androidtechingdemo.billsmart.ui.activity.ActivityFragment
 import androidtechingdemo.billsmart.ui.auth.LoginFragment
 import androidtechingdemo.billsmart.ui.auth.RegisterFragment
 import androidtechingdemo.billsmart.ui.expense.ExpenseFragment
+import androidtechingdemo.billsmart.ui.friends.AddNewContactFragment
 import androidtechingdemo.billsmart.ui.friends.FriendsFragment
 import androidtechingdemo.billsmart.ui.groups.GroupsFragment
 import androidx.appcompat.app.AppCompatActivity
@@ -55,40 +56,6 @@ class MainActivity : AppCompatActivity() {
 
     auth = Firebase.auth
     auth.useEmulator("10.0.2.2", 9099)
-  }
-
-  fun addMessage(text: String): Task<String> {
-    // Create the arguments to the callable function.
-    val data = hashMapOf(
-      "text" to text,
-      "push" to true,
-    )
-
-    return functions
-      .getHttpsCallable("addMessage")
-      .call(data)
-      .continueWith { task ->
-        // This continuation runs on either success or failure, but if the task
-        // has failed then result will throw an Exception which will be
-        // propagated down.
-        val result = task.result?.data as String
-        result
-      }
-  }
-
-  fun addNewUserInfo(displayName: String, email: String, uid: String): Task<String> {
-    val data = hashMapOf(
-      "displayName" to displayName,
-      "email" to email,
-      "uid" to uid,
-    )
-    return functions
-      .getHttpsCallable("addNewUserInfo")
-      .call(data)
-      .continueWith { task ->
-        val result = task.result?.data as String
-        result
-      }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -176,6 +143,10 @@ class MainActivity : AppCompatActivity() {
         label = ScreenSetting.FRIENDS.label
       }
 
+      fragment<AddNewContactFragment>(ScreenSetting.ADDNEWCONTACT.label) {
+        label = ScreenSetting.ADDNEWCONTACT.label
+      }
+
       fragment<GroupsFragment>(ScreenSetting.GROUPS.label) {
         label = ScreenSetting.GROUPS.label
       }
@@ -209,5 +180,31 @@ class MainActivity : AppCompatActivity() {
       supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
     val navController = navHostFragment.navController
     navController.navigate(fragment.label)
+  }
+
+  fun addNewFriendByEmail(email: String): Task<String> {
+    val data = hashMapOf(
+      "email" to email,
+    )
+    return functions
+      .getHttpsCallable("addNewFriendByEmail")
+      .call(data)
+      .continueWith { task ->
+        val result = task.result?.data as String
+        result
+      }
+  }
+
+  fun updateUserDisplayName(displayName: String): Task<Boolean> {
+    val data = hashMapOf(
+      "displayName" to displayName,
+    )
+    return functions
+      .getHttpsCallable("updateUserDisplayName")
+      .call(data)
+      .continueWith { task ->
+        val result = task.result?.data as Boolean
+        result
+      }
   }
 }

@@ -94,17 +94,19 @@ class RegisterFragment : Fragment() {
     auth.createUserWithEmailAndPassword(email, password)
       .addOnCompleteListener(requireActivity()) { task ->
         if (task.isSuccessful) {
-          val user = auth.currentUser
-
-          (requireActivity() as MainActivity).addNewUserInfo(
-            username, email, user!!.uid,
-          ).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-              Toast.makeText(context, task.result, Toast.LENGTH_LONG).show()
+          (requireActivity() as MainActivity).updateUserDisplayName(
+            username,
+          ).addOnCompleteListener {
+            if (it.isSuccessful) {
+              Toast.makeText(
+                context,
+                "Welcome, $username!",
+                Toast.LENGTH_LONG,
+              ).show()
             } else {
               Toast.makeText(
                 context,
-                task.exception?.message,
+                it.exception?.message,
                 Toast.LENGTH_LONG,
               ).show()
             }
