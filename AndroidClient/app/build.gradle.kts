@@ -3,6 +3,8 @@ plugins {
   alias(libs.plugins.jetbrainsKotlinAndroid)
   id("org.jmailen.kotlinter")
   id("com.google.gms.google-services")
+  kotlin("kapt") version "1.9.23"
+  id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -41,6 +43,8 @@ android {
 }
 
 dependencies {
+  implementation(libs.hilt.android)
+  kapt(libs.hilt.compiler)
   implementation(libs.picasso)
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.analytics)
@@ -55,11 +59,15 @@ dependencies {
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.lifecycle.livedata.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation(libs.firebase.functions.ktx)
-    implementation(libs.firebase.firestore.ktx)
-    testImplementation(libs.junit)
+  implementation(libs.firebase.functions.ktx)
+  implementation(libs.firebase.firestore.ktx)
+  testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
+}
+
+kapt {
+  correctErrorTypes = true
 }
 
 // TODO: set init.gradle.kts to auto setup the Git hooks

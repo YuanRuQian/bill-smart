@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.tasks.Task
 import com.google.firebase.functions.FirebaseFunctions
 import com.squareup.picasso.Picasso
+import javax.inject.Inject
 
 data class FriendUserInfo(
   val uid: String,
@@ -37,8 +38,10 @@ fun getFriendInfoByUID(uid: String): Task<FriendUserInfo> {
     }
 }
 
-class FriendsListAdapter(private val dataSet: MutableList<String>) :
+class FriendsListAdapter @Inject constructor() :
   RecyclerView.Adapter<FriendsListAdapter.ViewHolder>() {
+
+  private val dataSet: MutableList<String> = mutableListOf()
 
   /**
    * Provide a reference to the type of views that you are using

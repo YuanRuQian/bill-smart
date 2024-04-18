@@ -15,11 +15,17 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class FriendsFragment : Fragment() {
   private lateinit var binding: FragmentFriendsBinding
   private lateinit var firestore: FirebaseFirestore
-  private lateinit var friendsListAdapter: FriendsListAdapter
+
+  @Inject
+  lateinit var friendsListAdapter: FriendsListAdapter
   private lateinit var layoutManager: LinearLayoutManager
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -29,7 +35,6 @@ class FriendsFragment : Fragment() {
     // Inflate the layout for this fragment
     binding = FragmentFriendsBinding.inflate(inflater, container, false)
     firestore = Firebase.firestore
-    friendsListAdapter = FriendsListAdapter(mutableListOf())
     layoutManager = LinearLayoutManager(context)
     with(binding) {
       friendsRecyclerView.layoutManager = layoutManager
