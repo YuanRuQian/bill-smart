@@ -1,26 +1,28 @@
 package androidtechingdemo.billsmart.ui.friends
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidtechingdemo.billsmart.database.listenToUserFriendsList
 import androidtechingdemo.billsmart.databinding.FragmentFriendsBinding
-import androidtechingdemo.billsmart.ui.CollectionNames
 import androidtechingdemo.billsmart.ui.ScreenSetting
+import androidtechingdemo.billsmart.utils.BaseFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class FriendsFragment : Fragment() {
+class FriendsFragment : BaseFragment() {
   private lateinit var binding: FragmentFriendsBinding
   private lateinit var firestore: FirebaseFirestore
 
@@ -40,7 +42,11 @@ class FriendsFragment : Fragment() {
       friendsRecyclerView.layoutManager = layoutManager
       friendsRecyclerView.adapter = friendsListAdapter
     }
-    listenToUserFriendsInfo()
+    viewLifecycleOwner.lifecycleScope.launch {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        listenToUserFriendsList { friendsListAdapter.updateData(it) }
+      }
+    }
     return binding.root
   }
 
@@ -51,25 +57,6 @@ class FriendsFragment : Fragment() {
       addFriendButton.setOnClickListener {
         val navController = findNavController()
         navController.navigate(ScreenSetting.ADDNEWCONTACT.label)
-      }
-    }
-  }
-
-  private fun listenToUserFriendsInfo() {
-    val uid = Firebase.auth.currentUser?.uid
-    val docRef = firestore.collection(CollectionNames.USERS.name).document(uid!!).collection(CollectionNames.FRIENDS.name)
-    docRef.addSnapshotListener { snapshot, e ->
-      if (e != null) {
-        Log.w("FriendsFragment", "Listen failed.", e)
-        return@addSnapshotListener
-      }
-
-      if (snapshot != null && !snapshot.isEmpty) {
-        Log.d("FriendsFragment", "Current data: ${snapshot.documents}")
-        val newFriendsUidList = snapshot.documents.map { it.id }
-        friendsListAdapter.updateData(newFriendsUidList)
-      } else {
-        Log.d("FriendsFragment", "Current data: null")
       }
     }
   }

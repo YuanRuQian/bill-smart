@@ -6,12 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidtechingdemo.billsmart.databinding.FragmentAccountBinding
+import androidtechingdemo.billsmart.utils.BaseFragment
 import androidx.fragment.app.Fragment
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
-class AccountFragment : Fragment() {
+class AccountFragment : BaseFragment() {
 
   private lateinit var auth: FirebaseAuth
 

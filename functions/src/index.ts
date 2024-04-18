@@ -28,23 +28,32 @@ export const addNewFriendByEmail = onCall((request) => {
   const currentUserUID = request.auth?.token.uid || "";
   const {email} = request.data;
 
-  return auth().getUserByEmail(email).then((userRecord) => {
-    const friendUID = userRecord.uid;
-    if (currentUserUID === friendUID) {
-      throw new HttpsError("invalid-argument", "You can't add yourself as a friend!");
-    }
-    return firestore().collection(CollectionNames.USERS).doc(currentUserUID)
-      .collection(CollectionNames.FRIENDS).doc(friendUID).set({})
-      .then(() => {
-        firestore().collection(CollectionNames.USERS).doc(friendUID)
-          .collection(CollectionNames.FRIENDS).doc(currentUserUID).set({});
-      })
-      .catch((error) => {
-        throw new HttpsError("unknown", error.message, error);
-      });
-  })
-    .then(() => {
-      return "New friend added!";
+  return auth().getUserByEmail(email)
+    .then((userRecord) => {
+      const friendUID = userRecord.uid;
+      if (currentUserUID === friendUID) {
+        throw new HttpsError("invalid-argument", "You can't add yourself as a friend!");
+      }
+
+      return firestore().collection(CollectionNames.USERS).doc(currentUserUID)
+        .collection(CollectionNames.FRIENDS).doc(friendUID).get()
+        .then((doc) => {
+          if (doc.exists) {
+            throw new HttpsError("already-exists", "This user is already your friend!");
+          }
+        })
+        .then(() => {
+          return firestore().collection(CollectionNames.USERS).doc(currentUserUID)
+            .collection(CollectionNames.FRIENDS).doc(friendUID).set({})
+            .then(() => {
+              return firestore().collection(CollectionNames.USERS).doc(friendUID)
+                .collection(CollectionNames.FRIENDS).doc(currentUserUID).set({})
+                .then(() => "New friend added!")
+                .catch((error) => {
+                  throw new HttpsError("unknown", error.message, error);
+                });
+            });
+        });
     })
     .catch((error) => {
       throw new HttpsError("unknown", error.message, error);
@@ -79,6 +88,7 @@ export const getFriendsList = onCall((request) => {
             uid: doc.id,
             displayName: userRecord.displayName || "",
             email: userRecord.email || "",
+            photoURL: userRecord.photoURL || "",
           };
         });
       }));

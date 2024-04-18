@@ -1,4 +1,4 @@
-package androidtechingdemo.billsmart.ui
+package androidtechingdemo.billsmart.database
 
 sealed class CollectionNames(val name: String) {
 

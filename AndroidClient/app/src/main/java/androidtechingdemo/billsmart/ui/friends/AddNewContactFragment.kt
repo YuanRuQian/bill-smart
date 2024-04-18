@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidtechingdemo.billsmart.database.addNewFriendByEmail
 import androidtechingdemo.billsmart.databinding.FragmentAddNewContactBinding
-import androidtechingdemo.billsmart.ui.MainActivity
 import androidtechingdemo.billsmart.ui.ScreenSetting
 import androidtechingdemo.billsmart.utils.isValidEmail
 import androidx.core.widget.addTextChangedListener
@@ -48,7 +48,7 @@ class AddNewContactFragment : Fragment() {
 
       btnAdd.setOnClickListener {
         val email = editTextEmail.text.toString()
-        (requireActivity() as MainActivity).addNewFriendByEmail(email).addOnCompleteListener {
+        addNewFriendByEmail(email).addOnCompleteListener {
           if (it.isSuccessful) {
             val navController = findNavController()
             navController.navigate(ScreenSetting.FRIENDS.label)

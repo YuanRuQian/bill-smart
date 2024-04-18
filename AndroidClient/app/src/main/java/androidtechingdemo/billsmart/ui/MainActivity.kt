@@ -17,7 +17,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
-import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.google.firebase.auth.FirebaseAuth
@@ -75,27 +74,27 @@ class MainActivity : AppCompatActivity() {
     bottomNavigationView.setOnItemSelectedListener { menuItem ->
       when (menuItem.itemId) {
         R.id.friendsTab -> {
-          setCurrentFragment(ScreenSetting.FRIENDS)
+          setCurrentFragment(ScreenSetting.FRIENDS, false)
           true
         }
 
         R.id.groupsTab -> {
-          setCurrentFragment(ScreenSetting.GROUPS)
+          setCurrentFragment(ScreenSetting.GROUPS, false)
           true
         }
 
         R.id.expenseTab -> {
-          setCurrentFragment(ScreenSetting.EXPENSE)
+          setCurrentFragment(ScreenSetting.EXPENSE, false)
           true
         }
 
         R.id.activityTab -> {
-          setCurrentFragment(ScreenSetting.ACTIVITY)
+          setCurrentFragment(ScreenSetting.ACTIVITY, false)
           true
         }
 
         R.id.accountTab -> {
-          setCurrentFragment(ScreenSetting.ACCOUNT)
+          setCurrentFragment(ScreenSetting.ACCOUNT, false)
           true
         }
 
@@ -109,12 +108,12 @@ class MainActivity : AppCompatActivity() {
       val user = firebaseAuth.currentUser
       if (user != null) {
         // User is signed in, clear all back stack
-        setCurrentFragment(ScreenSetting.FRIENDS)
+        setCurrentFragment(ScreenSetting.FRIENDS, true)
         bottomNavigationView.visibility = View.VISIBLE
-        bottomNavigationView.menu.findItem(R.id.friendsTab).isChecked = true
+        changeBottomNavigationCheckedItem(ScreenSetting.FRIENDS.label)
       } else {
         // User is signed out, clear all back stack
-        setCurrentFragment(ScreenSetting.LOGIN)
+        setCurrentFragment(ScreenSetting.LOGIN, true)
         bottomNavigationView.visibility = View.GONE
       }
     }
@@ -177,36 +176,33 @@ class MainActivity : AppCompatActivity() {
     auth.removeAuthStateListener(authStateListener)
   }
 
-  private fun setCurrentFragment(fragment: ScreenSetting) {
+  private fun setCurrentFragment(fragment: ScreenSetting, clearUpToNow: Boolean) {
     val navHostFragment =
       supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
     val navController = navHostFragment.navController
-    navController.navigate(fragment.label)
+    navController.navigate(fragment.label) {
+      if (clearUpToNow) {
+        popUpTo(fragment.label) {
+          inclusive = true
+        }
+      }
+    }
   }
 
-  fun addNewFriendByEmail(email: String): Task<String> {
-    val data = hashMapOf(
-      "email" to email,
-    )
-    return functions
-      .getHttpsCallable("addNewFriendByEmail")
-      .call(data)
-      .continueWith { task ->
-        val result = task.result?.data as String
-        result
+  fun changeBottomNavigationCheckedItem(fragment: String) {
+    when (fragment) {
+      ScreenSetting.FRIENDS.label -> setBottomNavigationCheckedItem(R.id.friendsTab)
+      ScreenSetting.GROUPS.label -> setBottomNavigationCheckedItem(R.id.groupsTab)
+      ScreenSetting.EXPENSE.label -> setBottomNavigationCheckedItem(R.id.expenseTab)
+      ScreenSetting.ACTIVITY.label -> setBottomNavigationCheckedItem(R.id.activityTab)
+      ScreenSetting.ACCOUNT.label -> setBottomNavigationCheckedItem(R.id.accountTab)
+      else -> {
+        // Do nothing
       }
+    }
   }
 
-  fun updateUserDisplayName(displayName: String): Task<Boolean> {
-    val data = hashMapOf(
-      "displayName" to displayName,
-    )
-    return functions
-      .getHttpsCallable("updateUserDisplayName")
-      .call(data)
-      .continueWith { task ->
-        val result = task.result?.data as Boolean
-        result
-      }
+  private fun setBottomNavigationCheckedItem(friendsTab: Int) {
+    bottomNavigationView.menu.findItem(friendsTab).isChecked = true
   }
 }

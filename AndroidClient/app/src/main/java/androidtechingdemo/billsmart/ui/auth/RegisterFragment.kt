@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidtechingdemo.billsmart.database.updateUserDisplayName
 import androidtechingdemo.billsmart.databinding.FragmentRegisterBinding
-import androidtechingdemo.billsmart.ui.MainActivity
 import androidtechingdemo.billsmart.ui.ScreenSetting
 import androidtechingdemo.billsmart.utils.isValidEmail
 import androidtechingdemo.billsmart.utils.isValidPassword
@@ -94,7 +94,7 @@ class RegisterFragment : Fragment() {
     auth.createUserWithEmailAndPassword(email, password)
       .addOnCompleteListener(requireActivity()) { task ->
         if (task.isSuccessful) {
-          (requireActivity() as MainActivity).updateUserDisplayName(
+          updateUserDisplayName(
             username,
           ).addOnCompleteListener {
             if (it.isSuccessful) {

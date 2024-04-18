@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidtechingdemo.billsmart.R
-import androidx.fragment.app.Fragment
+import androidtechingdemo.billsmart.utils.BaseFragment
 
-class ExpenseFragment : Fragment() {
+class ExpenseFragment : BaseFragment() {
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,

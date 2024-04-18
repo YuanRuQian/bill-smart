@@ -7,41 +7,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidtechingdemo.billsmart.R
+import androidtechingdemo.billsmart.database.FriendUserInfo
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.tasks.Task
-import com.google.firebase.functions.FirebaseFunctions
 import com.squareup.picasso.Picasso
 import javax.inject.Inject
-
-data class FriendUserInfo(
-  val uid: String,
-  val displayName: String,
-  val email: String,
-  val photoURL: String,
-)
-
-fun getFriendInfoByUID(uid: String): Task<FriendUserInfo> {
-  val data = hashMapOf(
-    "uid" to uid,
-  )
-  return FirebaseFunctions.getInstance()
-    .getHttpsCallable("getFriendInfoByUID")
-    .call(data)
-    .continueWith { task ->
-      val ret = task.result?.data as HashMap<String, String>
-      FriendUserInfo(
-        uid = ret["uid"]!!,
-        displayName = ret["displayName"]!!,
-        email = ret["email"]!!,
-        photoURL = ret["photoURL"]!!,
-      )
-    }
-}
 
 class FriendsListAdapter @Inject constructor() :
   RecyclerView.Adapter<FriendsListAdapter.ViewHolder>() {
 
-  private val dataSet: MutableList<String> = mutableListOf()
+  private val dataSet: MutableList<FriendUserInfo> = mutableListOf()
 
   /**
    * Provide a reference to the type of views that you are using
@@ -69,25 +43,19 @@ class FriendsListAdapter @Inject constructor() :
 
   // Replace the contents of a view (invoked by the layout manager)
   override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-    getFriendInfoByUID(dataSet[position]).addOnCompleteListener {
-      if (it.isSuccessful) {
-        val friendInfo = it.result
-        viewHolder.textView.text = friendInfo.displayName
-        if (friendInfo.photoURL.isEmpty()) {
-          viewHolder.imageView.setImageResource(R.drawable.default_profile_image)
-        } else {
-          Picasso.get().load(friendInfo.photoURL).into(viewHolder.imageView)
-        }
-      } else {
-        Log.e("FriendsListAdapter", "Failed to get friend info", it.exception)
-      }
+    val friendInfo = dataSet[position]
+    viewHolder.textView.text = friendInfo.displayName
+    if (friendInfo.photoURL.isEmpty()) {
+      viewHolder.imageView.setImageResource(R.drawable.default_profile_image)
+    } else {
+      Picasso.get().load(friendInfo.photoURL).into(viewHolder.imageView)
     }
   }
 
   // Return the size of your dataset (invoked by the layout manager)
   override fun getItemCount() = dataSet.size
 
-  fun updateData(newData: List<String>) {
+  fun updateData(newData: List<FriendUserInfo>) {
     Log.d("FriendsListAdapter", "updateData: $newData")
     dataSet.clear()
     dataSet.addAll(newData)
