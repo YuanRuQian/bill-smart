@@ -7,15 +7,13 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 
-open class BaseFragment : Fragment() {
+open class BaseFragmentWithBackNavigation : Fragment() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    // Ensure the fragment can receive key events
-    requireActivity().onBackPressedDispatcher.addCallback(this) {
-      // Handle back button press event
-      onBackPressed()
-    }
+//    requireActivity().onBackPressedDispatcher.addCallback(this) {
+//      onBackPressed()
+//    }
   }
 
   // Override this method to handle back button press event
@@ -27,4 +25,3 @@ open class BaseFragment : Fragment() {
     findNavController().popBackStack()
   }
 }
-

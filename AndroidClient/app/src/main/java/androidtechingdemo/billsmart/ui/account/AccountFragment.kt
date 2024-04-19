@@ -4,15 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidtechingdemo.billsmart.databinding.FragmentAccountBinding
-import androidtechingdemo.billsmart.utils.BaseFragment
-import androidx.fragment.app.Fragment
+import androidtechingdemo.billsmart.utils.BaseFragmentWithBackNavigation
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
-class AccountFragment : BaseFragment() {
+class AccountFragment : BaseFragmentWithBackNavigation() {
 
   private lateinit var auth: FirebaseAuth
 
@@ -39,12 +37,6 @@ class AccountFragment : BaseFragment() {
   }
 
   private fun signOut() {
-    val displayName = auth.currentUser?.displayName
     auth.signOut()
-    Toast.makeText(
-      requireContext(),
-      "Goodbye!",
-      Toast.LENGTH_LONG,
-    ).show()
   }
 }

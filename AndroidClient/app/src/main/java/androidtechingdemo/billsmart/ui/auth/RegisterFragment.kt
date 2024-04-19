@@ -8,15 +8,15 @@ import android.widget.Toast
 import androidtechingdemo.billsmart.database.updateUserDisplayName
 import androidtechingdemo.billsmart.databinding.FragmentRegisterBinding
 import androidtechingdemo.billsmart.ui.ScreenSetting
+import androidtechingdemo.billsmart.utils.BaseFragmentWithBackNavigation
 import androidtechingdemo.billsmart.utils.isValidEmail
 import androidtechingdemo.billsmart.utils.isValidPassword
 import androidtechingdemo.billsmart.utils.isValidUsername
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 
-class RegisterFragment : Fragment() {
+class RegisterFragment : BaseFragmentWithBackNavigation() {
   private lateinit var auth: FirebaseAuth
 
   private lateinit var binding: FragmentRegisterBinding
@@ -97,13 +97,7 @@ class RegisterFragment : Fragment() {
           updateUserDisplayName(
             username,
           ).addOnCompleteListener {
-            if (it.isSuccessful) {
-              Toast.makeText(
-                context,
-                "Welcome, $username!",
-                Toast.LENGTH_LONG,
-              ).show()
-            } else {
+            if (!it.isSuccessful) {
               Toast.makeText(
                 context,
                 it.exception?.message,

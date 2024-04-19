@@ -1,5 +1,6 @@
 package androidtechingdemo.billsmart.ui.friends
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +9,12 @@ import android.widget.Toast
 import androidtechingdemo.billsmart.database.addNewFriendByEmail
 import androidtechingdemo.billsmart.databinding.FragmentAddNewContactBinding
 import androidtechingdemo.billsmart.ui.ScreenSetting
+import androidtechingdemo.billsmart.utils.BaseFragmentWithBackNavigation
 import androidtechingdemo.billsmart.utils.isValidEmail
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 
-class AddNewContactFragment : Fragment() {
+class AddNewContactFragment : BaseFragmentWithBackNavigation() {
   private lateinit var binding: FragmentAddNewContactBinding
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -25,6 +26,7 @@ class AddNewContactFragment : Fragment() {
     return binding.root
   }
 
+  @SuppressLint("RestrictedApi")
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
@@ -33,7 +35,11 @@ class AddNewContactFragment : Fragment() {
 
       btnCancel.setOnClickListener {
         val navController = findNavController()
-        navController.navigate(ScreenSetting.FRIENDS.label)
+        navController.navigate(ScreenSetting.FRIENDS.label) {
+          popUpTo(ScreenSetting.ADDNEWCONTACT.label) {
+            inclusive = true
+          }
+        }
       }
 
       editTextEmail.addTextChangedListener {
@@ -52,7 +58,6 @@ class AddNewContactFragment : Fragment() {
           if (it.isSuccessful) {
             val navController = findNavController()
             navController.navigate(ScreenSetting.FRIENDS.label)
-            Toast.makeText(context, it.result, Toast.LENGTH_LONG).show()
           } else {
             Toast.makeText(context, it.exception?.message, Toast.LENGTH_LONG).show()
           }

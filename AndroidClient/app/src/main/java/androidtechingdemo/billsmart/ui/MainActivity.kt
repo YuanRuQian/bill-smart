@@ -1,6 +1,8 @@
 package androidtechingdemo.billsmart.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidtechingdemo.billsmart.R
 import androidtechingdemo.billsmart.ui.account.AccountFragment
@@ -12,8 +14,7 @@ import androidtechingdemo.billsmart.ui.friends.AddNewContactFragment
 import androidtechingdemo.billsmart.ui.friends.FriendsFragment
 import androidtechingdemo.billsmart.ui.groups.GroupsFragment
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.NavController
 import androidx.navigation.createGraph
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.fragment
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity() {
   private lateinit var bottomNavigationView: BottomNavigationView
   private lateinit var functions: FirebaseFunctions
   private lateinit var firestore: FirebaseFirestore
+  private lateinit var navController: NavController
 
   private fun emulatorSettings() {
     // [START functions_emulator_connect]
@@ -59,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     auth.useEmulator("10.0.2.2", 9099)
   }
 
+  @SuppressLint("RestrictedApi")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
@@ -67,67 +70,28 @@ class MainActivity : AppCompatActivity() {
 
     emulatorSettings()
 
-    bottomNavigationView = findViewById(R.id.bottomNavigationView)
-
-    bottomNavigationView.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
-
-    bottomNavigationView.setOnItemSelectedListener { menuItem ->
-      when (menuItem.itemId) {
-        R.id.friendsTab -> {
-          setCurrentFragment(ScreenSetting.FRIENDS, false)
-          true
-        }
-
-        R.id.groupsTab -> {
-          setCurrentFragment(ScreenSetting.GROUPS, false)
-          true
-        }
-
-        R.id.expenseTab -> {
-          setCurrentFragment(ScreenSetting.EXPENSE, false)
-          true
-        }
-
-        R.id.activityTab -> {
-          setCurrentFragment(ScreenSetting.ACTIVITY, false)
-          true
-        }
-
-        R.id.accountTab -> {
-          setCurrentFragment(ScreenSetting.ACCOUNT, false)
-          true
-        }
-
-        else -> {
-          false
-        }
-      }
-    }
-
-    authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-      val user = firebaseAuth.currentUser
-      if (user != null) {
-        // User is signed in, clear all back stack
-        setCurrentFragment(ScreenSetting.FRIENDS, true)
-        bottomNavigationView.visibility = View.VISIBLE
-        changeBottomNavigationCheckedItem(ScreenSetting.FRIENDS.label)
-      } else {
-        // User is signed out, clear all back stack
-        setCurrentFragment(ScreenSetting.LOGIN, true)
-        bottomNavigationView.visibility = View.GONE
-      }
-    }
-
-    ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-      val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-      v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-      insets
-    }
-
     // Retrieve the NavController.
     val navHostFragment =
       supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-    val navController = navHostFragment.navController
+    navController = navHostFragment.navController
+
+    navController.addOnDestinationChangedListener { controller, _, _ ->
+      controller.currentBackStack.value.let { backStack ->
+        val str = backStack.joinToString(
+          separator = "\n",
+          prefix = "backStack: [ ",
+          postfix = " ]"
+        ) { entry ->
+          buildString {
+            append(" route=")
+            append(entry.destination.route)
+            append(" displayName=")
+            append(entry.destination.displayName)
+          }
+        }
+        Log.d("Backstack", str)
+      }
+    }
 
     navController.graph = navController.createGraph(
       startDestination = ScreenSetting.LOGIN.label,
@@ -164,6 +128,67 @@ class MainActivity : AppCompatActivity() {
         label = ScreenSetting.ACCOUNT.label
       }
     }
+
+    authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+      val user = firebaseAuth.currentUser
+      navController.popBackStack(navController.currentBackStackEntry!!.destination.route!!, true)
+      if (user != null) {
+        // User is signed in, clear all back stack
+        changeBottomNavigationCheckedItem(ScreenSetting.FRIENDS.label)
+        navController.navigate(ScreenSetting.FRIENDS.label) {
+          popUpTo(ScreenSetting.LOGIN.label) {
+            inclusive = true
+          }
+        }
+        bottomNavigationView.visibility = View.VISIBLE
+        navController.graph.setStartDestination(ScreenSetting.FRIENDS.label)
+      } else {
+        // User is signed out, clear all back stack
+        navController.navigate(ScreenSetting.LOGIN.label) {
+          popUpTo(ScreenSetting.LOGIN.label) {
+            inclusive = true
+          }
+        }
+        bottomNavigationView.visibility = View.GONE
+      }
+    }
+
+    bottomNavigationView = findViewById(R.id.bottomNavigationView)
+
+    bottomNavigationView.labelVisibilityMode = NavigationBarView.LABEL_VISIBILITY_LABELED
+
+    bottomNavigationView.setOnItemSelectedListener { menuItem ->
+      when (menuItem.itemId) {
+        R.id.friendsTab -> {
+          navController.navigate(ScreenSetting.FRIENDS.label)
+          true
+        }
+
+        R.id.groupsTab -> {
+          navController.navigate(ScreenSetting.GROUPS.label)
+          true
+        }
+
+        R.id.expenseTab -> {
+          navController.navigate(ScreenSetting.EXPENSE.label)
+          true
+        }
+
+        R.id.activityTab -> {
+          navController.navigate(ScreenSetting.ACTIVITY.label)
+          true
+        }
+
+        R.id.accountTab -> {
+          navController.navigate(ScreenSetting.ACCOUNT.label)
+          true
+        }
+
+        else -> {
+          false
+        }
+      }
+    }
   }
 
   override fun onStart() {
@@ -174,19 +199,6 @@ class MainActivity : AppCompatActivity() {
   override fun onStop() {
     super.onStop()
     auth.removeAuthStateListener(authStateListener)
-  }
-
-  private fun setCurrentFragment(fragment: ScreenSetting, clearUpToNow: Boolean) {
-    val navHostFragment =
-      supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-    val navController = navHostFragment.navController
-    navController.navigate(fragment.label) {
-      if (clearUpToNow) {
-        popUpTo(fragment.label) {
-          inclusive = true
-        }
-      }
-    }
   }
 
   fun changeBottomNavigationCheckedItem(fragment: String) {
@@ -202,7 +214,7 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  private fun setBottomNavigationCheckedItem(friendsTab: Int) {
-    bottomNavigationView.menu.findItem(friendsTab).isChecked = true
+  private fun setBottomNavigationCheckedItem(tab: Int) {
+    bottomNavigationView.menu.findItem(tab).isChecked = true
   }
 }

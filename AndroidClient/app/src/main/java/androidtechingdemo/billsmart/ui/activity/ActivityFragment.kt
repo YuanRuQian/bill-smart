@@ -5,10 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidtechingdemo.billsmart.R
-import androidtechingdemo.billsmart.utils.BaseFragment
-import androidx.fragment.app.Fragment
+import androidtechingdemo.billsmart.utils.BaseFragmentWithBackNavigation
 
-class ActivityFragment : BaseFragment() {
+class ActivityFragment : BaseFragmentWithBackNavigation() {
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,

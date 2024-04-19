@@ -7,8 +7,10 @@ import com.google.firebase.firestore.firestore
 
 fun listenToUserFriendsList(handler: (List<FriendUserInfo>) -> Unit) {
   val uid = Firebase.auth.currentUser?.uid
-  val docRef = Firebase.firestore.collection(CollectionNames.USERS.name).document(uid!!).collection(
-    CollectionNames.FRIENDS.name)
+  uid ?: return
+  val docRef = Firebase.firestore.collection(CollectionNames.USERS.name).document(uid).collection(
+    CollectionNames.FRIENDS.name,
+  )
   docRef.addSnapshotListener { snapshot, e ->
     if (e != null) {
       Log.w("FriendsFragment", "Listen failed.", e)

@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidtechingdemo.billsmart.databinding.FragmentLoginBinding
 import androidtechingdemo.billsmart.ui.ScreenSetting
+import androidtechingdemo.billsmart.utils.BaseFragmentWithBackNavigation
 import androidtechingdemo.billsmart.utils.isValidEmail
 import androidtechingdemo.billsmart.utils.isValidPassword
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
 
-class LoginFragment : Fragment() {
+class LoginFragment : BaseFragmentWithBackNavigation() {
   private lateinit var auth: FirebaseAuth
 
   private lateinit var binding: FragmentLoginBinding
@@ -73,12 +73,9 @@ class LoginFragment : Fragment() {
 
   private fun signIn(email: String, password: String) {
     binding.buttonLogin.isEnabled = false
-
     auth.signInWithEmailAndPassword(email, password)
       .addOnCompleteListener(requireActivity()) { task ->
-        if (task.isSuccessful) {
-          Toast.makeText(context, "Welcome back, ${auth.currentUser?.displayName}", Toast.LENGTH_LONG).show()
-        } else {
+        if (!task.isSuccessful) {
           Toast.makeText(
             context,
             task.exception?.message,

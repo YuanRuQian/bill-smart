@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidtechingdemo.billsmart.R
-import androidtechingdemo.billsmart.utils.BaseFragment
+import androidtechingdemo.billsmart.utils.BaseFragmentWithBackNavigation
 
-class ExpenseFragment : BaseFragment() {
+class ExpenseFragment : BaseFragmentWithBackNavigation() {
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,

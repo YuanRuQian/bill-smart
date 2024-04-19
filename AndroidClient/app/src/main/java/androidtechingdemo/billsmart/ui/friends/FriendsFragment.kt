@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import androidtechingdemo.billsmart.database.listenToUserFriendsList
 import androidtechingdemo.billsmart.databinding.FragmentFriendsBinding
 import androidtechingdemo.billsmart.ui.ScreenSetting
-import androidtechingdemo.billsmart.utils.BaseFragment
-import androidx.fragment.app.Fragment
+import androidtechingdemo.billsmart.utils.BaseFragmentWithBackNavigation
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -22,7 +23,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class FriendsFragment : BaseFragment() {
+class FriendsFragment : BaseFragmentWithBackNavigation() {
   private lateinit var binding: FragmentFriendsBinding
   private lateinit var firestore: FirebaseFirestore
 
@@ -43,10 +44,19 @@ class FriendsFragment : BaseFragment() {
       friendsRecyclerView.adapter = friendsListAdapter
     }
     viewLifecycleOwner.lifecycleScope.launch {
-      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
         listenToUserFriendsList { friendsListAdapter.updateData(it) }
       }
+    }.let { job ->
+      // Add an observer to the fragment's lifecycle
+      viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+        override fun onPause(owner: LifecycleOwner) {
+          super.onPause(owner)
+          job.cancel()
+        }
+      })
     }
+
     return binding.root
   }
 
@@ -56,7 +66,11 @@ class FriendsFragment : BaseFragment() {
     with(binding) {
       addFriendButton.setOnClickListener {
         val navController = findNavController()
-        navController.navigate(ScreenSetting.ADDNEWCONTACT.label)
+        navController.navigate(ScreenSetting.ADDNEWCONTACT.label) {
+          popUpTo(ScreenSetting.FRIENDS.label) {
+            inclusive = true
+          }
+        }
       }
     }
   }
