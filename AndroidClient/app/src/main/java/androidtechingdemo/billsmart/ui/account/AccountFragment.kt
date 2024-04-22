@@ -19,7 +19,7 @@ class AccountFragment : BaseFragmentWithBackNavigation() {
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
-    savedInstanceState: Bundle?,
+    savedInstanceState: Bundle?
   ): View {
     binding = FragmentAccountBinding.inflate(inflater, container, false)
     auth = Firebase.auth

@@ -15,7 +15,7 @@ fun getFriendsList(): Task<List<FriendUserInfo>> {
           uid = it["uid"]!!,
           displayName = it["displayName"]!!,
           email = it["email"]!!,
-          photoURL = it["photoURL"]!!,
+          photoURL = it["photoURL"]!!
         )
       }
     }

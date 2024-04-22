@@ -9,7 +9,7 @@ fun listenToUserFriendsList(handler: (List<FriendUserInfo>) -> Unit) {
   val uid = Firebase.auth.currentUser?.uid
   uid ?: return
   val docRef = Firebase.firestore.collection(CollectionNames.USERS.name).document(uid).collection(
-    CollectionNames.FRIENDS.name,
+    CollectionNames.FRIENDS.name
   )
   docRef.addSnapshotListener { snapshot, e ->
     if (e != null) {

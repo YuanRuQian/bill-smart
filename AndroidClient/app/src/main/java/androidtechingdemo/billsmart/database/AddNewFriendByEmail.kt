@@ -6,7 +6,7 @@ import com.google.firebase.functions.functions
 
 fun addNewFriendByEmail(email: String): Task<String> {
   val data = hashMapOf(
-    "email" to email,
+    "email" to email
   )
   return Firebase.functions
     .getHttpsCallable("addNewFriendByEmail")

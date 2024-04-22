@@ -6,7 +6,7 @@ import com.google.firebase.functions.functions
 
 fun updateUserDisplayName(displayName: String): Task<Boolean> {
   val data = hashMapOf(
-    "displayName" to displayName,
+    "displayName" to displayName
   )
   return Firebase.functions
     .getHttpsCallable("updateUserDisplayName")

@@ -22,7 +22,7 @@ class LoginFragment : BaseFragmentWithBackNavigation() {
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
-    savedInstanceState: Bundle?,
+    savedInstanceState: Bundle?
   ): View {
     binding = FragmentLoginBinding.inflate(inflater, container, false)
     return binding.root
@@ -79,7 +79,7 @@ class LoginFragment : BaseFragmentWithBackNavigation() {
           Toast.makeText(
             context,
             task.exception?.message,
-            Toast.LENGTH_LONG,
+            Toast.LENGTH_LONG
           ).show()
         }
       }

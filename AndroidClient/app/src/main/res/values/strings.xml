@@ -29,4 +29,6 @@
   <string name="add_an_expense">Add an Expense</string>
   <string name="cancel">Cancel</string>
   <string name="add_new_contact">Add New Contact</string>
+    <string name="add_friend">Add Friend</string>
+  <string name="expense_add_friend">Search a Friend by Name to Add Expense</string>
 </resources>

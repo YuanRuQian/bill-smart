@@ -1,4 +1,4 @@
-package androidtechingdemo.billsmart.ui.friends
+package androidtechingdemo.billsmart.database
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidtechingdemo.billsmart.R
-import androidtechingdemo.billsmart.database.FriendUserInfo
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import javax.inject.Inject

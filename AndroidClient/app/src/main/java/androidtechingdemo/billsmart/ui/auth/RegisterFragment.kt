@@ -24,7 +24,7 @@ class RegisterFragment : BaseFragmentWithBackNavigation() {
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
-    savedInstanceState: Bundle?,
+    savedInstanceState: Bundle?
   ): View {
     binding = FragmentRegisterBinding.inflate(inflater, container, false)
     return binding.root
@@ -95,13 +95,13 @@ class RegisterFragment : BaseFragmentWithBackNavigation() {
       .addOnCompleteListener(requireActivity()) { task ->
         if (task.isSuccessful) {
           updateUserDisplayName(
-            username,
+            username
           ).addOnCompleteListener {
             if (!it.isSuccessful) {
               Toast.makeText(
                 context,
                 it.exception?.message,
-                Toast.LENGTH_LONG,
+                Toast.LENGTH_LONG
               ).show()
             }
           }
@@ -109,7 +109,7 @@ class RegisterFragment : BaseFragmentWithBackNavigation() {
           Toast.makeText(
             context,
             task.exception?.message,
-            Toast.LENGTH_LONG,
+            Toast.LENGTH_LONG
           ).show()
         }
       }

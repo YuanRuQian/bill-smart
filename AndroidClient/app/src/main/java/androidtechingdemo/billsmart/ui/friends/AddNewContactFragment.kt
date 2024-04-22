@@ -19,7 +19,7 @@ class AddNewContactFragment : BaseFragmentWithBackNavigation() {
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
-    savedInstanceState: Bundle?,
+    savedInstanceState: Bundle?
   ): View {
     // Inflate the layout for this fragment
     binding = FragmentAddNewContactBinding.inflate(inflater, container, false)

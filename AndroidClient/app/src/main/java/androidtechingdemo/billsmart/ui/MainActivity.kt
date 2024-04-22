@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     navController.graph = navController.createGraph(
-      startDestination = ScreenSetting.LOGIN.label,
+      startDestination = ScreenSetting.FRIENDS.label
     ) {
       fragment<LoginFragment>(ScreenSetting.LOGIN.label) {
         label = ScreenSetting.LOGIN.label

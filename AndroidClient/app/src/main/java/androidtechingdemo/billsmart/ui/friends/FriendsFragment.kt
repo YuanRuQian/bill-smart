@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidtechingdemo.billsmart.database.FriendsListAdapter
 import androidtechingdemo.billsmart.database.listenToUserFriendsList
 import androidtechingdemo.billsmart.databinding.FragmentFriendsBinding
 import androidtechingdemo.billsmart.ui.ScreenSetting
 import androidtechingdemo.billsmart.utils.BaseFragmentWithBackNavigation
-import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -33,7 +32,7 @@ class FriendsFragment : BaseFragmentWithBackNavigation() {
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
-    savedInstanceState: Bundle?,
+    savedInstanceState: Bundle?
   ): View {
     // Inflate the layout for this fragment
     binding = FragmentFriendsBinding.inflate(inflater, container, false)
@@ -44,17 +43,9 @@ class FriendsFragment : BaseFragmentWithBackNavigation() {
       friendsRecyclerView.adapter = friendsListAdapter
     }
     viewLifecycleOwner.lifecycleScope.launch {
-      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
         listenToUserFriendsList { friendsListAdapter.updateData(it) }
       }
-    }.let { job ->
-      // Add an observer to the fragment's lifecycle
-      viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
-        override fun onPause(owner: LifecycleOwner) {
-          super.onPause(owner)
-          job.cancel()
-        }
-      })
     }
 
     return binding.root
